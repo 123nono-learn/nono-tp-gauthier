@@ -1,18 +1,24 @@
-name: CI - Vérification HTML
-
+name: CD - Déploiement sur GitHub Pages
 
 on:
- push:
-  branches: [ "main" ]
- pull_request:
-  branches: [ "main" ]
+  workflow_run:
+    workflows: ["CI - Vérification HTML"]
+    types:
+      - completed,
+
 jobs:
- test-html:
-  runs-on: ubuntu-latest
-  steps:
+  Deploiement:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+
     - name: Récupération du code
-      uses: actions/checkout@v3
-    - name: Vérification syntaxe HTML
-      uses: Cyb3r-Jak3/html5validator-action@v7.2.0
+      uses: actions/checkout@v3,
+
+
+    - name: Déploiement vers GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
       with:
-       root: .
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
